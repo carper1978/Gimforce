@@ -2195,28 +2195,72 @@
         </div>
     </div>
 </section>
+<!-- ...tu contenido HTML anterior permanece igual... -->
 
-<script>
-    // Script para añadir opiniones desde el formulario
-    document.getElementById('form-opinion').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const nombre = document.getElementById('nombreOpinion').value.trim();
-        const texto = document.getElementById('textoOpinion').value.trim();
-        if (nombre && texto) {
-            const opinionHTML = `
-                <div class="col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <p class="card-text">${texto.replace(/</g, "&lt;")}</p>
-                            <h6 class="card-subtitle text-muted">- ${nombre.replace(/</g, "&lt;")}</h6>
-                        </div>
+    <!-- Sección de Opiniones/Testimonios -->
+    <section id="opiniones" class="container py-5">
+        <h2 class="mb-4 text-center"><i class="fa-solid fa-comments"></i> Opiniones de Nuestros Clientes</h2>
+        <div id="lista-opiniones" class="row mb-4">
+            <!-- Opiniones de ejemplo -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">¡Excelente gimnasio! Los entrenadores son muy profesionales y el ambiente es motivador.</p>
+                        <h6 class="card-subtitle text-muted">- Ana López</h6>
                     </div>
                 </div>
-            `;
-            document.getElementById('lista-opiniones').insertAdjacentHTML('afterbegin', opinionHTML);
-            document.getElementById('form-opinion').reset();
-        }
-    });
-</script>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">He mejorado mucho mi condición física gracias a GimForce. ¡Recomendado!</p>
+                        <h6 class="card-subtitle text-muted">- Luis Pérez</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Formulario para agregar nueva opinión -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">¡Comparte tu experiencia!</h5>
+                <form id="form-opinion">
+                    <div class="mb-3">
+                        <label for="nombreOpinion" class="form-label">Tu nombre</label>
+                        <input type="text" class="form-control" id="nombreOpinion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="textoOpinion" class="form-label">Tu opinión</label>
+                        <textarea class="form-control" id="textoOpinion" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Publicar opinión</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Script para añadir opiniones desde el formulario
+        document.getElementById('form-opinion').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('nombreOpinion').value.trim();
+            const texto = document.getElementById('textoOpinion').value.trim();
+            if (nombre && texto) {
+                const opinionHTML = `
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">${texto.replace(/</g, "&lt;")}</p>
+                                <h6 class="card-subtitle text-muted">- ${nombre.replace(/</g, "&lt;")}</h6>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('lista-opiniones').insertAdjacentHTML('afterbegin', opinionHTML);
+                document.getElementById('form-opinion').reset();
+            }
+        });
+    </script>
+</body>
+</html>
 </body>
 </html>
