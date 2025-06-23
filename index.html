@@ -6,22 +6,6 @@
     <title>GimForce - Tu Mejor Versión</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    He encontrado el archivo principal de tu proyecto:  
-[index.html en tu repositorio gimforce](https://github.com/carper1978/Gimforce/blob/2530102afffae06baca37c4b626c9b54530f8f32/index.html#L1-L111).
-
-Por la descripción y el código, veo que usas un menú lateral fijo a la derecha (`navbar`) que ocupa 200px y el contenido principal tiene un margen derecho igual (`margin-right: 200px;`).  
-En pantallas móviles, el menú se oculta y aparece al activar el menú móvil, pero el contenido principal sigue teniendo el margen derecho, lo que produce el espacio en blanco a la derecha.
-
-**Problema:**  
-En móviles, `.main-content` debería ocupar todo el ancho (quitar el `margin-right: 200px;`).
-
-**Solución:**  
-Debes modificar tu CSS. Aquí tienes los cambios corregidos y listos para aplicar:
-
-```html name=index.html
-<!-- Solo muestro la parte relevante del archivo -->
-<head>
-    ...
     <style>
         :root {
             --primary-color: #ff4d4d;
@@ -45,11 +29,6 @@ Debes modificar tu CSS. Aquí tienes los cambios corregidos y listos para aplica
             transition: transform 0.3s ease;
         }
 
-        /* Ajuste para el contenido principal (escritorio) */
-        .main-content {
-            margin-right: 200px;
-        }
-
         @media (max-width: 991px) {
             .navbar {
                 transform: translateX(100%);
@@ -68,22 +47,198 @@ Debes modificar tu CSS. Aquí tienes los cambios corregidos y listos para aplica
                 background-color: rgba(33, 37, 41, 0.95);
             }
 
-            /* CORRECCIÓN: Elimina el margen derecho en móviles */
             .main-content {
-                margin-right: 0 !important;
+                margin-right: 0;
             }
         }
-        ...
+
+        .navbar-brand {
+            text-align: center;
+            width: 100%;
+            padding: 15px 0;
+            margin-right: 0 !important;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-brand i {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-5px);
+            }
+            60% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .navbar-nav {
+            width: 100%;
+            padding-top: 20px;
+        }
+
+        .nav-item {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .nav-link {
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            transform: translateX(-5px);
+        }
+
+        /* Ajuste para el contenido principal */
+        .main-content {
+            margin-right: 200px;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .class-card {
+            transition: transform 0.3s;
+        }
+
+        .class-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .trainer-img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .cta-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #ff3333;
+            transform: scale(1.05);
+        }
+
+        /* Estilos para el modal de registro */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .training-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .training-gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        .training-gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        .registration-form input {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .registration-form button {
+            width: 100%;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #28a745;
+        }
+
+        /* Estilos para los submenús */
+        .submenu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: rgba(50, 55, 60, 0.95);
+        }
+
+        .nav-item.active .submenu {
+            max-height: 300px;
+        }
+
+        .submenu li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 15px;
+            display: block;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .submenu li a:hover {
+            background-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .nav-item > .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-item > .nav-link::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+
+        .nav-item.active > .nav-link::after {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
-```
-
-**¿Qué debes hacer?**
-1. Asegúrate de que el bloque CSS para `.main-content` dentro del `@media (max-width: 991px)` tenga:  
-   `margin-right: 0 !important;`
-2. Guarda los cambios y prueba en tu móvil.
-
-¿Quieres que te ayude a revisar otro archivo o que te pase el archivo completo corregido?</head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -2000,112 +2155,5 @@ Debes modificar tu CSS. Aquí tienes los cambios corregidos y listos para aplica
             }
         });
     </script>
-    <!-- Sección de Opiniones/Testimonios -->
-<section id="opiniones" class="container py-5">
-    <h2 class="mb-4 text-center"><i class="fa-solid fa-comments"></i> Opiniones de Nuestros Clientes</h2>
-    <div id="lista-opiniones" class="row mb-4">
-        <!-- Opiniones de ejemplo -->
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-text">¡Excelente gimnasio! Los entrenadores son muy profesionales y el ambiente es motivador.</p>
-                    <h6 class="card-subtitle text-muted">- Ana López</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-text">He mejorado mucho mi condición física gracias a GimForce. ¡Recomendado!</p>
-                    <h6 class="card-subtitle text-muted">- Luis Pérez</h6>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Formulario para agregar nueva opinión -->
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">¡Comparte tu experiencia!</h5>
-            <form id="form-opinion">
-                <div class="mb-3">
-                    <label for="nombreOpinion" class="form-label">Tu nombre</label>
-                    <input type="text" class="form-control" id="nombreOpinion" required>
-                </div>
-                <div class="mb-3">
-                    <label for="textoOpinion" class="form-label">Tu opinión</label>
-                    <textarea class="form-control" id="textoOpinion" rows="3" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-danger">Publicar opinión</button>
-            </form>
-        </div>
-    </div>
-</section>
-<!-- ...tu contenido HTML anterior permanece igual... -->
-
-    <!-- Sección de Opiniones/Testimonios -->
-    <section id="opiniones" class="container py-5">
-        <h2 class="mb-4 text-center"><i class="fa-solid fa-comments"></i> Opiniones de Nuestros Clientes</h2>
-        <div id="lista-opiniones" class="row mb-4">
-            <!-- Opiniones de ejemplo -->
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-text">¡Excelente gimnasio! Los entrenadores son muy profesionales y el ambiente es motivador.</p>
-                        <h6 class="card-subtitle text-muted">- Ana López</h6>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-text">He mejorado mucho mi condición física gracias a GimForce. ¡Recomendado!</p>
-                        <h6 class="card-subtitle text-muted">- Luis Pérez</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Formulario para agregar nueva opinión -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">¡Comparte tu experiencia!</h5>
-                <form id="form-opinion">
-                    <div class="mb-3">
-                        <label for="nombreOpinion" class="form-label">Tu nombre</label>
-                        <input type="text" class="form-control" id="nombreOpinion" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="textoOpinion" class="form-label">Tu opinión</label>
-                        <textarea class="form-control" id="textoOpinion" rows="3" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-danger">Publicar opinión</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        // Script para añadir opiniones desde el formulario
-        document.getElementById('form-opinion').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('nombreOpinion').value.trim();
-            const texto = document.getElementById('textoOpinion').value.trim();
-            if (nombre && texto) {
-                const opinionHTML = `
-                    <div class="col-md-6 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text">${texto.replace(/</g, "&lt;")}</p>
-                                <h6 class="card-subtitle text-muted">- ${nombre.replace(/</g, "&lt;")}</h6>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('lista-opiniones').insertAdjacentHTML('afterbegin', opinionHTML);
-                document.getElementById('form-opinion').reset();
-            }
-        });
-    </script>
-</body>
-</html>
 </body>
 </html>
