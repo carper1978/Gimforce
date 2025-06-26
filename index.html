@@ -265,6 +265,14 @@
     </style>
 </head>
 <body>
+    <!-- Control de música fijo arriba a la derecha con ecualizador -->
+    <div id="musicControlBar" class="position-fixed top-0 end-0 m-3 p-2 bg-dark rounded-3 shadow d-flex align-items-center" style="z-index: 2000;">
+        <button id="muteToggle" class="btn btn-dark d-flex align-items-center me-2" style="cursor: pointer;">
+            <i class="fas fa-volume-up text-white"></i>
+        </button>
+        <canvas id="equalizerCanvas" width="80" height="32" style="background:transparent;"></canvas>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid flex-column">
@@ -1879,7 +1887,7 @@
     </div>
 
     <!-- Audio de fondo -->
-    <audio id="backgroundMusic" loop preload="auto">
+    <audio id="backgroundMusic" loop preload="auto" style="display:none;">
         <source src="Alesso _ Sumr Camp - In The Middle (Extended Mix).mp3" type="audio/mpeg">
         Tu navegador no soporta el elemento de audio.
     </audio>
@@ -2107,61 +2115,104 @@
                 promoModal.show();
             }, 3000);
 
-            // Configuración mejorada del reproductor de música
+            // --- NUEVO CONTROL DE MÚSICA Y ECUALIZADOR ---
             const backgroundMusic = document.getElementById('backgroundMusic');
-            const musicToggle = document.getElementById('musicToggle');
-            const musicStatus = document.getElementById('musicStatus');
-            const volumeControl = document.getElementById('volumeControl');
-            const playIcon = musicToggle.querySelector('i.fas');
-            let isMusicPlaying = false;
+            const muteToggle = document.getElementById('muteToggle');
+            const muteIcon = muteToggle.querySelector('i.fas');
+            const equalizerCanvas = document.getElementById('equalizerCanvas');
+            const eqCtx = equalizerCanvas.getContext('2d');
+            let isMuted = false;
 
-            // Establecer volumen inicial
-            backgroundMusic.volume = volumeControl.value;
-
-            // Control de volumen
-            volumeControl.addEventListener('input', function() {
-                backgroundMusic.volume = this.value;
-            });
-
-            // Precarga la música
-            backgroundMusic.load();
-
-            musicToggle.addEventListener('click', function() {
-                if (isMusicPlaying) {
-                    backgroundMusic.pause();
-                    musicToggle.classList.remove('btn-primary');
-                    musicToggle.classList.add('btn-dark');
-                    musicStatus.textContent = 'Reproducir música';
-                    playIcon.classList.remove('fa-pause');
-                    playIcon.classList.add('fa-play');
-                } else {
-                    // Intenta reproducir y maneja posibles errores
-                    const playPromise = backgroundMusic.play();
-                    
-                    if (playPromise !== undefined) {
-                        playPromise.then(_ => {
-                            // Reproducción exitosa
-                            musicToggle.classList.remove('btn-dark');
-                            musicToggle.classList.add('btn-primary');
-                            musicStatus.textContent = 'Pausar música';
-                            playIcon.classList.remove('fa-play');
-                            playIcon.classList.add('fa-pause');
-                        })
-                        .catch(error => {
-                            // Error en la reproducción
-                            console.error('Error al reproducir la música:', error);
-                            alert('Hubo un problema al reproducir la música. Por favor, intenta de nuevo.');
-                        });
-                    }
+            // Web Audio API para ecualizador
+            let audioCtx, analyser, source, dataArray, animationId;
+            function setupAudioContext() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    source = audioCtx.createMediaElementSource(backgroundMusic);
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 64;
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
                 }
-                isMusicPlaying = !isMusicPlaying;
+            }
+
+            function drawEqualizer() {
+                if (!analyser) return;
+                analyser.getByteFrequencyData(dataArray);
+                eqCtx.clearRect(0, 0, equalizerCanvas.width, equalizerCanvas.height);
+                const barWidth = 8;
+                const barGap = 2;
+                for (let i = 0; i < 8; i++) {
+                    const value = dataArray[i+2]; // saltar los graves más bajos
+                    const barHeight = (value / 255) * equalizerCanvas.height;
+                    // Colores tipo Winamp
+                    let color = `hsl(${i*40}, 90%, 55%)`;
+                    eqCtx.fillStyle = color;
+                    eqCtx.fillRect(i * (barWidth + barGap), equalizerCanvas.height - barHeight, barWidth, barHeight);
+                }
+                animationId = requestAnimationFrame(drawEqualizer);
+            }
+
+            function startEqualizer() {
+                setupAudioContext();
+                if (animationId) cancelAnimationFrame(animationId);
+                drawEqualizer();
+            }
+            function stopEqualizer() {
+                if (animationId) cancelAnimationFrame(animationId);
+                eqCtx.clearRect(0, 0, equalizerCanvas.width, equalizerCanvas.height);
+            }
+
+            // Autoplay al cargar
+            function tryAutoplay() {
+                setupAudioContext();
+                backgroundMusic.volume = 0.5;
+                backgroundMusic.muted = false;
+                backgroundMusic.play().then(() => {
+                    muteIcon.classList.remove('fa-volume-mute');
+                    muteIcon.classList.add('fa-volume-up');
+                    isMuted = false;
+                    startEqualizer();
+                }).catch(() => {
+                    // Si no se puede autoplay, dejar sin reproducir
+                    stopEqualizer();
+                });
+            }
+            tryAutoplay();
+
+            // Botón de mute/unmute
+            muteToggle.addEventListener('click', function() {
+                if (backgroundMusic.muted) {
+                    backgroundMusic.muted = false;
+                    muteIcon.classList.remove('fa-volume-mute');
+                    muteIcon.classList.add('fa-volume-up');
+                    isMuted = false;
+                    startEqualizer();
+                } else {
+                    backgroundMusic.muted = true;
+                    muteIcon.classList.remove('fa-volume-up');
+                    muteIcon.classList.add('fa-volume-mute');
+                    isMuted = true;
+                    stopEqualizer();
+                }
             });
 
-            // Manejo de errores de audio
-            backgroundMusic.addEventListener('error', function(e) {
-                console.error('Error en la carga de audio:', e);
-                alert('No se pudo cargar el archivo de música. Por favor, verifica que el archivo existe en la carpeta correcta.');
-            });
+            // Si el usuario interactúa, intentar reproducir si no está sonando
+            document.body.addEventListener('click', function() {
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                if (backgroundMusic.paused && !backgroundMusic.muted) {
+                    backgroundMusic.play();
+                    startEqualizer();
+                }
+            }, { once: true });
+
+            // Si el audio termina, reiniciar ecualizador
+            backgroundMusic.addEventListener('play', startEqualizer);
+            backgroundMusic.addEventListener('pause', stopEqualizer);
+            backgroundMusic.addEventListener('ended', stopEqualizer);
 
             // Manejo del formulario de consultas
             const consultaForm = document.getElementById('consultaForm');
